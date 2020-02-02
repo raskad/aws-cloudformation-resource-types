@@ -49,7 +49,7 @@ func main() {
 		resources = append(resources, r...)
 	}
 	for _, resource := range resources {
-		println(resource)
+		fmt.Println(resource)
 	}
 }
 
