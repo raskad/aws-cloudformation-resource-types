@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"golang.org/x/net/html"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
+
+	"golang.org/x/net/html"
 )
 
 type awsCloudformationDocJSON struct {
@@ -32,12 +33,19 @@ type awsCloudformationDocJSONMapEnd struct {
 }
 
 func main() {
+	resources := GetCloudFormationResources()
+	for _, resource := range resources {
+		fmt.Println(resource)
+	}
+}
+
+// GetCloudFormationResources returns a slice of all found cloudformation resources.
+func GetCloudFormationResources() (resources []string) {
 	cloudformationServices, err := getCloudformationServices()
 	if err != nil {
 		fmt.Println("Error fetching cloudformation services: ", err)
 		os.Exit(1)
 	}
-	var resources = []string{}
 	for _, service := range cloudformationServices {
 		url := fmt.Sprintf("https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/toc-%v.json", service)
 		r, err := getResourceTypes(url)
@@ -48,9 +56,7 @@ func main() {
 		}
 		resources = append(resources, r...)
 	}
-	for _, resource := range resources {
-		fmt.Println(resource)
-	}
+	return
 }
 
 func getCloudformationServices() (cloudformationServices []string, err error) {
